@@ -1,36 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Calculator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Responsive Calculator - Let's Practice!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    /* Reset and base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin:0;
+      font-family: 'Inter', sans-serif;
+      background: #1e1e2f;
+      color: #f0f0f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    /* Container holding everything */
+    .app-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 480px;
+      width: 90vw;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+    /* Header */
+    header {
+      text-align: center;
+      padding: 16px 0 24px;
+      font-weight: 600;
+      font-size: 1.8rem;
+      user-select: none;
+      letter-spacing: 0.03em;
+      color: #a2a2b8;
+    }
+    /* Calculator */
+    .calculator {
+      background: #2c2c44;
+      border-radius: 16px;
+      box-shadow:
+        0 6px 12px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 16px;
+    }
+    /* Display */
+    .calculator-display {
+      background: #1b1b2b;
+      border-radius: 12px;
+      color: #e4e4ff;
+      font-size: 2rem;
+      font-weight: 600;
+      padding: 14px 18px;
+      text-align: right;
+      user-select: none;
+      min-height: 54px;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+    /* Buttons Grid */
+    .calculator-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    button.calc-btn {
+      background: #434361;
+      border: none;
+      border-radius: 12px;
+      height: 56px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #d0d0e8;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    button.calc-btn:focus-visible {
+      outline: 3px solid #7080ff;
+      outline-offset: 2px;
+    }
+    button.calc-btn:hover {
+      background: #5a5a7f;
+    }
+    /* Special buttons styling */
+    button.operator {
+      background: #6969a0;
+      color: #fffff8;
+      font-weight: 700;
+    }
+    button.operator:hover {
+      background: #8585b8;
+    }
+    button.ac {
+      background: #bf616a;
+      color: #fff8f0;
+      font-weight: 700;
+    }
+    button.ac:hover {
+      background: #d27d85;
+    }
+    button.equals {
+      background: #5a9a57;
+      color: #f3f9f0;
+      font-weight: 700;
+    }
+    button.equals:hover {
+      background: #75b479;
+    }
+    /* Responsive text scaling */
+    @media (max-width: 767px) {
+      header {
+        font-size: 1.5rem;
+        padding: 12px 0 20px;
+      }
+      .calculator-display {
+        font-size: 1.6rem;
+        min-height: 48px;
+      }
+      button.calc-btn {
+        height: 52px;
+        font-size: 1.1rem;
+      }
+    }
+    @media (min-width: 768px) {
+      .app-container {
+        width: 400px;
+        max-width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="calculator">
-        <h1>Let's Practice!</h1>
-        <input type="text" id="result" disabled>
-        <div class="buttons">
-            <button onclick="clearResult()">AC</button>
-            <button onclick="clearLast()">C</button>
-            <button onclick="append('*')">*</button>
-            <button onclick="append('/')">/</button>
-            <button onclick="append('7')">7</button>
-            <button onclick="append('8')">8</button>
-            <button onclick="append('9')">9</button>
-            <button onclick="append('4')">4</button>
-            <button onclick="append('5')">5</button>
-            <button onclick="append('6')">6</button>
-            <button onclick="append('1')">1</button>
-            <button onclick="append('2')">2</button>
-            <button onclick="append('3')">3</button>
-            <button onclick="append('0')">0</button>
-            <button onclick="append('.')">.</button>
-            <button onclick="calculateResult()">=</button>
-            <button onclick="append('-')">-</button>
-            <button onclick="append('+')">+</button>
-        </div>
-    </div>
-    <script src="script.js"></script>
+  <header role="banner" aria-label="Calculator header">
+    Let's Practice !
+  </header>
+
+  <main class="app-container" role="main">
+    <section class="calculator" aria-label="Calculator">
+      <div 
+        class="calculator-display" 
+        id="display" 
+        role="textbox" 
+        aria-live="polite" 
+        aria-atomic="true" 
+        aria-readonly="true" 
+        tabindex="0"
+      >0</div>
+      <div class="calculator-buttons" role="group" aria-label="Calculator buttons">
+        <button type="button" class="calc-btn ac" data-action="clear-all" aria-label="Clear all input">
+          AC
+        </button>
+        <button type="button" class="calc-btn" data-action="clear-entry" aria-label="Clear last entry">
+          C
+        </button>
+        <button type="button" class="calc-btn operator" data-action="multiply" aria-label="Multiply">
+          <span class="material-icons" aria-hidden="true">close</span>
+        </button>
+        <button type="button" class="calc-btn operator" data-action="divide" aria-label="Divide">
+          <span class="material-icons" aria-hidden="true">divide</span>
+        </button>
+
+        <button type="button" class="calc-btn" data-action="7" aria-label="Number seven">7</button>
+        <button type="button" class="calc-btn" data-action="8" aria-label="Number eight">8</button>
+        <button type="button" class="calc-btn" data-action="9" aria-label="Number nine">9</button>
+        <button type="button" class="calc-btn operator" data-action="add" aria-label="Add">
+          <span class="material-icons" aria-hidden="true">add</span>
+        </button>
+
+        <button type="button" class="calc-btn" data-action="4" aria-label="Number four">4</button>
+        <button type="button" class="calc-btn" data-action="5" aria-label="Number five">5</button>
+        <button type="button" class="calc-btn" data-action="6" aria-label="Number six">6</button>
+        <button type="button" class="calc-btn operator" data-action="subtract" aria-label="Subtract">
+          <span class="material-icons" aria-hidden="true">remove</span>
+        </button>
+
+        <button type="button" class="calc-btn" data-action="1" aria-label="Number one">1</button>
+        <button type="button" class="calc-btn" data-action="2" aria-label="Number two">2</button>
+        <button type="button" class="calc-btn" data-action="3" aria-label="Number three">3</button>
+
+        <button type="button" class="calc-btn" data-action="toggle-sign" aria-label="Toggle positive or negative sign">±</button>
+        <button type="button" class="calc-btn" data-action="0" aria-label="Number zero">0</button>
+        <button type="button" class="calc-btn" data-action="decimal" aria-label="Decimal point">.</button>
+        <button type="button" class="calc-btn equals" data-action="equal" aria-label="Equals">
+          =
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer role="contentinfo" aria-label="Footer" style="text-align: center; margin: 16px 0 32px; font-size: 0.85rem; color: #666;">
+    &copy; 2024 Let's Practice Calculator
+  </footer>
+
+  <script>
+    (() => {
+      const display = document.getElementById('display');
+      let currentInput = '0';
+      let equation = '';
+      let lastPressed = '';
+      let resetNext = false;
+
+      function updateDisplay(value) {
+        display.textContent = value;
+        display.setAttribute('aria-label', 'Display: ' + value);
+      }
+
+      function clearAll() {
+        currentInput = '0';
+        equation = '';
+        lastPressed = '';
+        resetNext = false;
+        updateDisplay(currentInput);
+      }
+
+      function clearEntry() {
+        if (resetNext || currentInput === '0') return;
+        if (currentInput.length > 1) {
+          currentInput = currentInput.slice(0, -1);
+        } else {
+          currentInput = '0';
+        }
+        updateDisplay(currentInput);
+      }
+
+      function appendNumber(num) {
+        if (resetNext) {
+          currentInput = num;
+          resetNext = false;
+        } else if (currentInput === '0') {
+          currentInput = num;
+        } else {
+          currentInput += num;
+        }
+        updateDisplay(currentInput);
+      }
+
+      function appendDecimal() {
+        if (resetNext) {
+          currentInput = '0.';
+          resetNext = false;
+        } else if (!currentInput.includes('.')) {
+          currentInput += '.';
+        }
+        updateDisplay(currentInput);
+      }
+
+      function toggleSign() {
+        if (currentInput === '0') return;
+        if (currentInput.startsWith('-')) {
+          currentInput = currentInput.slice(1);
+        } else {
+          currentInput = '-' + currentInput;
+        }
+        updateDisplay(currentInput);
+      }
+
+      function computeResult() {
+        try {
+          // Replace multiply and divide symbol if used
+          let safeEquation = equation + currentInput;
+          safeEquation = safeEquation.replace(/×/g, '*').replace(/÷/g, '/');
+
+          // Validate safe characters only digits and operators
+          if (!/^[-+*/.\d\s]+$/.test(safeEquation)) {
+            throw 'Invalid characters';
+          }
+          // Evaluate using Function constructor (safer than eval but still be cautious)
+          const result = Function('return ' + safeEquation)();
+          if (result === Infinity || result === -Infinity) {
+            updateDisplay('Error: Divide by zero');
+            resetNext = true;
+            return;
+          }
+          currentInput = String(result);
+          updateDisplay(currentInput);
+          equation = '';
+          resetNext = true;
+          lastPressed = 'equal';
+        } catch {
+          updateDisplay('Error');
+          resetNext = true;
+          equation = '';
+          currentInput = '0';
+        }
+      }
+
+      function onOperator(operator) {
+        if (lastPressed === 'operator') {
+          // Replace last operator if sequential operators pressed
+          equation = equation.slice(0, -1) + operator;
+        } else {
+          equation += currentInput + operator;
+        }
+        resetNext = true;
+        lastPressed = 'operator';
+      }
+
+      function handleButtonPress(action) {
+        if (!isNaN(action)) {
+          // Number pressed
+          appendNumber(action);
+          lastPressed = 'number';
+          return;
+        }
+        switch (action) {
+          case 'clear-all':
+            clearAll();
+            break;
+          case 'clear-entry':
+            clearEntry();
+            break;
+          case 'decimal':
+            appendDecimal();
+            break;
+          case 'toggle-sign':
+            toggleSign();
+            break;
+          case 'add':
+            onOperator('+');
+            break;
+          case 'subtract':
+            onOperator('-');
+            break;
+          case 'multiply':
+            onOperator('*');
+            break;
+          case 'divide':
+            onOperator('/');
+            break;
+          case 'equal':
+            computeResult();
+            break;
+          default:
+            break;
+        }
+      }
+
+      document.querySelectorAll('.calc-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const action = button.getAttribute('data-action');
+          handleButtonPress(action);
+        });
+      });
+
+      // Initialize calculator
+      clearAll();
+    })();
+  </script>
 </body>
 </html>
+
